@@ -16,7 +16,8 @@
     "test:integration": "jest --runInBand --selectProjects integration",
     "prisma:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "bench:checkout": "tsx scripts/checkout-latency.ts"
   },
   "repository": {
     "type": "git",
