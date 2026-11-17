@@ -28,8 +28,22 @@ export class RedisStreamsBus implements MessageBus {
     await this.redis.xadd(this.stream, 'MAXLEN', '~', 100_000, '*', 'event', JSON.stringify(event));
   }
 
-  async receive(consumer: string, { max, waitMs }: { max: number; waitMs: number }) {
+  async receive(consumer: string, options: { max: number; waitMs: number }) {
     await this.ensureGroup(consumer);
+    try {
+      return await this.read(consumer, options);
+    } catch (err) {
+      // The stream or group vanished (e.g. Redis restarted without persistence). Forget it so
+      // the next receive() creates it again, instead of failing on every poll.
+      if ((err as Error).message.includes('NOGROUP')) {
+        this.knownGroups.delete(consumer);
+        return [];
+      }
+      throw err;
+    }
+  }
+
+  private async read(consumer: string, { max, waitMs }: { max: number; waitMs: number }) {
     const retries = await this.claimDueRetries(consumer, max);
     if (retries.length > 0) return retries;
 
