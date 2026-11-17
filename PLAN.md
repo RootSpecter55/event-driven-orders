@@ -6,12 +6,12 @@ A shop checkout split into modules that never call each other: **orders**, **inv
 
 ## Modules
 
-| Module    | Responsibility                                                                                                                                                                  |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module    | Responsibility                                                                                                                                                                 |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | products  | Catalogue: create, list, get, update and restock products. Each product has a price and a stock count.                                                                         |
 | orders    | Place an order (202 Accepted) and read orders. Holds the **checkout saga**, which reacts to inventory and payment events and drives the order through its state machine.       |
-| inventory | Consumer of `inventory.*` commands: reserve stock (atomic, never oversells), commit a reservation, release it. Lists reservations.                                               |
-| payments  | Consumer of `payment.*` commands: charge and refund through `PaymentProvider`. Lists payments.                                                                                  |
+| inventory | Consumer of `inventory.*` commands: reserve stock (atomic, never oversells), commit a reservation, release it. Lists reservations.                                             |
+| payments  | Consumer of `payment.*` commands: charge and refund through `PaymentProvider`. Lists payments.                                                                                 |
 | events    | Outbox, inbox and dead letters. The outbox relay, the generic consumer runner (inbox check, retries, dead-lettering), event payload schemas, and admin endpoints with redrive. |
 
 **Shared code (`src/common/`):** config (Zod-validated env), logger, error classes and the global error handler, `validate` middleware, pagination helper, API-key auth middleware, base repository, Prisma client and transaction helper, Redis client, response helpers.
